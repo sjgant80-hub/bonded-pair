@@ -1,0 +1,52 @@
+[
+  {
+    "mutation": "> → >=",
+    "snippet": "else if (kind === 'rings') y = (rad > 0.35 && rad < 0.78) ? 1 : -1;                       ",
+    "reason": "The 'rings' task labels by rad = sqrt(x0^2+x1^2), a continuous value; rad is exactly 0.35 with probability zero and occurs for no generated point, so `rad > 0.35` and `rad >= 0.35` give identical labels. (The && conjunction on this line IS killed by the rings-has-a-closed-region assertion in §6.)"
+  },
+  {
+    "mutation": "> → >=",
+    "snippet": "out.bondedBeatsMonolith = acc.bonded.filter((b, i) => b > acc.monolith[i]).length;",
+    "reason": "bondedBeatsMonolith counts seeds where the pair STRICTLY beats the monolith; `>` and `>=` differ only on an exact accuracy tie. No seed produces bonded == monolith (test accuracies are distinct multiples of 1/nTest across all seeds — verified), so the count is identical."
+  },
+  {
+    "mutation": "> → >=",
+    "snippet": "out.bondedBeatsEnsemble = acc.bonded.filter((b, i) => b > acc.ensemble[i]).length;",
+    "reason": "bondedBeatsEnsemble: `>` vs `>=` differ only on an exact bonded == ensemble accuracy tie, which occurs on no seed (verified distinct across all seeds), so the count is identical."
+  },
+  {
+    "mutation": "> → >=",
+    "snippet": "out.bondedBeatsBestMember = acc.bonded.filter((b, i) => b > acc.memberBest[i] + 1e-9).leng",
+    "reason": "The `+ 1e-9` makes the compared threshold memberBest+1e-9; test accuracies b are multiples of 1/nTest and can never equal (a multiple of 1/nTest)+1e-9, so `b > mb+1e-9` and `b >= mb+1e-9` are identical for every possible input."
+  },
+  {
+    "mutation": "< → <=",
+    "snippet": "for (let j = 0; j < mlp.H; j++) { const dh = dz2 * mlp.W2[j] * (1 - h[j] * h[j]); const g ",
+    "reason": "The surviving flip is the INNER bound `i <= xb.length`, which writes one element past gW1[j] (index din+1); step() only reads indices 0..din, so the extra write is never read. The sibling OUTER flip `j <= mlp.H` indexes an undefined gradient row and THROWS — it is killed, not baselined."
+  },
+  {
+    "mutation": "< → <=",
+    "snippet": "for (let j = 0; j < mlp.H; j++) for (let i = 0; i < mlp.din + 1; i++) mlp.W1[j][i] -= lr *",
+    "reason": "The surviving flip is the INNER bound `i <= mlp.din+1`, which writes W1[j] one element past its length (index din+1); fwd() only reads indices 0..din, so the extra write never affects any forward pass (predict stays finite). The sibling OUTER flip `j <= mlp.H` indexes an undefined weight row and THROWS — it is killed, not baselined."
+  },
+  {
+    "mutation": "< → <=",
+    "snippet": "if (kind === 'modular') y = (x0 < 0) ? Math.sign(x1 - x0 - 0.15) : Math.sign(x1 + x0 + 0.1",
+    "reason": "x0 = r()*2-1 with r() in (0,1); x0 is exactly 0 only if r() returns exactly 0.5, which occurs for no point the suite generates (verified: zero points with x0===0 across every modular dataset), so `x0 < 0` and `x0 <= 0` route identically."
+  },
+  {
+    "mutation": "< → <=",
+    "snippet": "else if (kind === 'rings') y = (rad > 0.35 && rad < 0.78) ? 1 : -1;                       ",
+    "reason": "Same line, outer annulus bound: rad is exactly 0.78 with probability zero and occurs for no generated point, so `rad < 0.78` and `rad <= 0.78` give identical labels."
+  },
+  {
+    "mutation": "< → <=",
+    "snippet": "let Hbig = H; while ((Hbig * 3 + (Hbig + 1)) < memberP) Hbig++;",
+    "reason": "The loop condition's left side 3*Hbig+(Hbig+1) = 4*Hbig+1 is always ODD while memberP = 2*(H*4+(H+1)) is always EVEN; an odd value can never equal an even one, so `< memberP` and `<= memberP` terminate at the identical Hbig for every H (parity-provable equivalent)."
+  },
+  {
+    "mutation": "+ 1 → - 1",
+    "snippet": "out.bondedBeatsBestMember = acc.bonded.filter((b, i) => b > acc.memberBest[i] + 1e-9).leng",
+    "reason": "Flipping the +-1e-9 tie-guard changes bondedBeatsBestMember only when bonded exactly ties memberBest. No such tie occurs (bonded ~0.86 dominates memberBest ~0.55 on the checkerboard; verified the count is identical with -1e-9), so the reported value is unchanged."
+  }
+]
